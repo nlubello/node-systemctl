@@ -25,6 +25,33 @@ function isEnabled(serviceName) {
     })
 }
 
+function isActive(serviceName) {
+    return new Promise((resolve, reject) => {
+        run('is-active', serviceName)
+            .then((result) => {
+                if(result.stdout.indexOf('active') != -1 && result.stdout.indexOf('inactive')==-1)
+                  resolve(true)
+                else
+                  resolve(false)
+            })
+            .catch(function (err) {
+                resolve(false)
+            })
+    })
+}
+
+function getAll() {
+    return new Promise((resolve, reject) => {
+        run('list-units --type=service')
+            .then((result) => {
+                resolve(result)
+            })
+            .catch(function (err) {
+                resolve(err)
+            })
+    })
+}
+
 function restart(serviceName) {
     return run("restart", serviceName)
 }
@@ -42,6 +69,8 @@ module.exports.daemonReload = daemonReload
 module.exports.disable = disable
 module.exports.enable = enable
 module.exports.isEnabled = isEnabled
+module.exports.isActive = isActive
 module.exports.restart = restart
 module.exports.start = start
 module.exports.stop = stop
+module.exports.getAll = getAll
